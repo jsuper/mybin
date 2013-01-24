@@ -12,9 +12,15 @@ commit-all() {
     IFS=$'\n'
     for file in $(gits -s)
     do
+	m_type=$(echo $file|awk '{print $1}')
 	path=$(echo $file | awk '{print $2}')
-	echo $path
-	git add $path
+	if [ -n "$(echo $m_type | grep "^D.*")" ];then
+	    echo "Remove file $path"
+	    git rm $path
+	else
+	    echo "Stage file modification for $path"
+	    git add $path
+	fi
     done
     echo "Ready for commit"
     git commit -m"$1"
